@@ -1,0 +1,28 @@
+version: '2'
+services:
+  mysql:
+    image: armhfbuild/mysql:5.5
+    container_name: mysql
+    mem_limit: 192m
+    environment:
+      - MYSQL_DATABASE=ttrss
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_USER=ttrss
+      - MYSQL_PASSWORD=userpass
+    volumes:
+    - /d/mysql/lib:/var/lib/mysql
+    - /d/mysql/conf.d:/etc/mysql/conf.d
+    network_mode: "bridge"
+    restart: unless-stopped
+  ttrss:
+    build: docker-php-mysql
+    container_name: ttrss
+    links:
+      - mysql:db
+    volumes:
+      - ttrss_var_www_html:/var/www/html:rw
+    environment:
+      - VIRTUAL_HOST=your.host.com
+      - CERT_NAME=shared
+    network_mode: bridge
+    restart: unless-stopped
