@@ -1,5 +1,6 @@
 version: '2'
 services:
+
   mysql:
     image: armhfbuild/mysql:5.5
     container_name: mysql
@@ -14,15 +15,22 @@ services:
     - /etc/mysql/conf.d
     network_mode: "bridge"
     restart: unless-stopped
+
   ttrss:
-    build: docker-php-mysql
+    build: php-mysql
     container_name: ttrss
     links:
-      - mysql:db
+    - mysql:db
     volumes:
-      - /var/www/html
+    - ttrss_var_www_html:/var/www/html-ttrss
     environment:
-      - VIRTUAL_HOST=your.host.com
-      - CERT_NAME=shared
+    - VIRTUAL_HOST=your.host.com
+    - CERT_NAME=shared
+    - VIRTUAL_PROTO=fpm
+    - APP_LOCATION=/var/www/html-ttrss
     network_mode: bridge
     restart: unless-stopped
+
+volumes:
+  ttrss_var_www_html:
+    external: yes
